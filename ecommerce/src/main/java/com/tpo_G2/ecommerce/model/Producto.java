@@ -19,4 +19,11 @@ public class Producto {
     private String descripcion;
     private Double precio;
     private Integer stock;
+
+    @ManyToOne
+    private Usuario usuario;
+
+    @ManyToOne
+    private Categoria categoria;
+    
 }
