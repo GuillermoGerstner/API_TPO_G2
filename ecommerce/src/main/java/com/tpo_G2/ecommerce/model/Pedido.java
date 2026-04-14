@@ -1,0 +1,33 @@
+package com.tpo_G2.ecommerce.model;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.Data;
+
+@Data
+@Entity
+@Table(name = "pedido")
+public class Pedido{
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
+
+  private Date fecha;
+  private String estado;
+  private double total;
+
+  private String calle;
+  private String ciudad;
+  private String cp;
+  private String pais;
+
+  @ManyToOne
+  private Usuario usuario;
+
+  @OneToMany(mappedBy = "pedido")
+  private List<ItemPedido> items;
+  
+}
