@@ -1,6 +1,7 @@
 package com.tpo_G2.ecommerce.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,10 @@ public class CarritoService {
   private CarritoRepository carritoRepository;
   @Autowired
   private ProductoRepository productoRepository;
+  @Autowired
+  private PedidoRepository pedidoRepository;
 
-  public Carrito agregarProducto(Long carritoId, Long productoId, int cantidad){
+  public Carrito addProducto(Long carritoId, Long productoId, int cantidad){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
     Producto producto = productoRepository.findById(productoId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
@@ -60,7 +63,7 @@ public class CarritoService {
     return carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
   }
 
-  public Carrito eliminarItem(Long carritoId, Long itemId){
+  public Carrito deleteItem(Long carritoId, Long itemId){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
 
     if(carrito.getItems() == null || carrito.getItems().isEmpty()){
@@ -75,12 +78,51 @@ public class CarritoService {
     return carritoRepository.save(carrito);
   }
 
-  public Carrito vaciarCarrito(Long carritoId){
+  public Carrito emptyCarrito(Long carritoId){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
     
     if(carrito.getItems() != null){
       carrito.getItems().clear();
     }
     return carritoRepository.save(carrito);
+  }
+
+  // De escalar deberiamos llevar el checkout a su propia clase de servicio, pero por ahora por simplicidad lo dejamos acá.
+  public Pedido checkout(Long carritoId){
+    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+    
+    if(carrito.getItems() == null || carrito.getItems().isEmpty()){
+      throw new RuntimeException("El carrito está vacío");
+    }
+
+    Pedido pedido = new Pedido();
+    pedido.setFecha(new Date());
+    pedido.setEstado("CONFIRMADO");
+    pedido.setUsuario(carrito.getUsuario());
+
+    double total = 0;
+    for(ItemCarrito itemCarrito : carrito.getItems()){
+      Producto producto = itemCarrito.getProducto();
+      if(producto.getStock() < itemCarrito.getCantidad()){
+        throw new RuntimeException("Sin stock suficiente para el producto: " + producto.getNombre());
+      }
+
+      producto.setStock(producto.getStock() - itemCarrito.getCantidad());
+      productoRepository.save(producto);
+
+      ItemPedido itemPedido = new ItemPedido();
+      itemPedido.setProducto(producto);
+      itemPedido.setCantidad(itemCarrito.getCantidad());
+      itemPedido.setPrecioUnitario(producto.getPrecio());
+      itemPedido.setPedido(pedido);
+
+      pedido.getItems().add(itemPedido);
+      total += itemCarrito.getCantidad() * producto.getPrecio();
+    }
+    pedido.setTotal(total);
+    Pedido pedidoGuardado = pedidoRepository.save(pedido);
+    carrito.getItems().clear();
+    carritoRepository.save(carrito);
+    return pedidoGuardado;
   }
 }

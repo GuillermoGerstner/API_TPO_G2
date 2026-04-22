@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tpo_G2.ecommerce.model.Carrito;
+import com.tpo_G2.ecommerce.model.Pedido;
 import com.tpo_G2.ecommerce.service.CarritoService;
 
 @RestController
@@ -21,7 +22,7 @@ public class CarritoController {
 
     @PostMapping("/{id}/agregar")
     public Carrito addCarrito(@PathVariable Long id, @RequestParam Long productoId, @RequestParam int cantidad) {
-        return carritoService.agregarProducto(id, productoId, cantidad);
+        return carritoService.addProducto(id, productoId, cantidad);
     }
 
     @GetMapping("/{id}")
@@ -31,11 +32,16 @@ public class CarritoController {
 
     @DeleteMapping("/{carritoId}/eliminar/{itemId}")
     public Carrito deleteItem(@PathVariable Long carritoId, @PathVariable Long itemId) {
-        return carritoService.eliminarItem(carritoId, itemId);
+        return carritoService.deleteItem(carritoId, itemId);
     }
 
     @DeleteMapping("/{carritoId}/vaciar")
-    public Carrito vaciarCarrito(@PathVariable Long carritoId) {
-        return carritoService.vaciarCarrito(carritoId);
+    public Carrito emptyCarrito(@PathVariable Long carritoId) {
+        return carritoService.emptyCarrito(carritoId);
+    }
+
+    @PostMapping("/{carritoId}/checkout")
+    public Pedido checkout(@PathVariable Long carritoId) {
+        return carritoService.checkout(carritoId);
     }
 }
