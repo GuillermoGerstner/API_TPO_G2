@@ -17,7 +17,7 @@ public class CarritoService {
   @Autowired
   private ProductoRepository productoRepository;
 
-  public Carrito addProducto(Long carritoId, Long productoId, int cantidad){
+  public Carrito agregarProducto(Long carritoId, Long productoId, int cantidad){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
     Producto producto = productoRepository.findById(productoId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
@@ -58,5 +58,29 @@ public class CarritoService {
   
   public Carrito getCarritoById(Long carritoId) {
     return carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+  }
+
+  public Carrito eliminarItem(Long carritoId, Long itemId){
+    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+
+    if(carrito.getItems() == null || carrito.getItems().isEmpty()){
+      throw new RuntimeException("El carrito está vacío");
+    }
+
+    boolean eliminado = carrito.getItems().removeIf(item -> item.getId().equals(itemId));
+
+    if(!eliminado){
+      throw new RuntimeException("Item no encontrado en el carrito");
+    }
+    return carritoRepository.save(carrito);
+  }
+
+  public Carrito vaciarCarrito(Long carritoId){
+    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+    
+    if(carrito.getItems() != null){
+      carrito.getItems().clear();
+    }
+    return carritoRepository.save(carrito);
   }
 }
