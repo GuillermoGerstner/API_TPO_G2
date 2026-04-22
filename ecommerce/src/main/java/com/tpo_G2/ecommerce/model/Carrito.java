@@ -1,7 +1,9 @@
 package com.tpo_G2.ecommerce.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -15,6 +17,7 @@ import lombok.Data;
 @Entity
 @Table(name = "carrito")
 public class Carrito{
+
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
@@ -22,7 +25,7 @@ public class Carrito{
   @OneToOne
   private Usuario usuario;
 
-  @OneToMany(mappedBy = "carrito")
-  private List<ItemCarrito> items;
+  @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ItemCarrito> items = new ArrayList<>();
   
 }
