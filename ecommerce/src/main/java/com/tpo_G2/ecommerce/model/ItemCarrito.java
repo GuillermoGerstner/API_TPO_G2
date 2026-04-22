@@ -1,5 +1,7 @@
 package com.tpo_G2.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -25,6 +27,7 @@ public class ItemCarrito{
 
   @ManyToOne
   @JoinColumn(name = "carrito_id")
+  @JsonIgnore
   private Carrito carrito;
   
 }

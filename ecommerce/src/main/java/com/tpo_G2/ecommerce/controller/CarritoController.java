@@ -30,7 +30,7 @@ public class CarritoController {
         return carritoService.getCarritoById(id);
     }
 
-    @DeleteMapping("/{carritoId}/eliminar/{itemId}")
+    @DeleteMapping("/{carritoId}/item/{itemId}")
     public Carrito deleteItem(@PathVariable Long carritoId, @PathVariable Long itemId) {
         return carritoService.deleteItem(carritoId, itemId);
     }

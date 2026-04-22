@@ -1,5 +1,7 @@
 package com.tpo_G2.ecommerce.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -22,6 +24,7 @@ public class ItemPedido{
   private Producto producto;
 
   @ManyToOne
+  @JsonIgnore
   private Pedido pedido;
   
 }
