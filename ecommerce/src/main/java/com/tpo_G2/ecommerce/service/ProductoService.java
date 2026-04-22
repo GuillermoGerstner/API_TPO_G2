@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class ProductoService {
+
     @Autowired
     private ProductoRepository productoRepository;
 
@@ -36,5 +37,20 @@ public class ProductoService {
         }
 
         return producto;
+    }
+
+    public Producto updateProducto(Long id, Producto productoActualizado) {
+        Producto producto = productoRepository.findById(id).orElse(null);
+
+        if (producto != null) {
+            producto.setNombre(productoActualizado.getNombre());
+            producto.setDescripcion(productoActualizado.getDescripcion());
+            producto.setPrecio(productoActualizado.getPrecio());
+            producto.setStock(productoActualizado.getStock());
+            producto.setCategoria(productoActualizado.getCategoria());
+
+            return productoRepository.save(producto);
+        }
+        return null;
     }
 }
