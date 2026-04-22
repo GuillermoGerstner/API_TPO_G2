@@ -2,6 +2,7 @@ package com.tpo_G2.ecommerce.model;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -14,17 +15,24 @@ import lombok.Data;
 @Entity
 @Table(name = "usuarios")
 public class Usuario{
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
 
-  private String username;
-  private String nombre;
-  private String apellido;
-  private String email;
-  private String password;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id_usuario")
+    private Long idUsuario;
 
-  @OneToMany(mappedBy = "usuario")
-  private List<Producto> productos;
-  
+    @Column(nullable = false, unique = true)
+    private String username;
+
+    @Column(nullable = false, unique = true)
+    private String email;
+
+    @Column(nullable = false)
+    private String password;
+
+    private String nombre;
+    private String apellido;
+
+    @OneToMany(mappedBy = "usuario")
+    private List<Producto> productos;
 }
