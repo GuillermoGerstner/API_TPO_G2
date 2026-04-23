@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
 import com.tpo_G2.ecommerce.model.Pedido;
 import com.tpo_G2.ecommerce.repository.PedidoRepository;
 
@@ -19,6 +20,6 @@ public class PedidoService {
     }
 
     public Pedido getPedidoById(Long id) {
-        return pedidoRepository.findById(id).orElse(null);
+        return pedidoRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Pedido no encontrado con id: " + id));
     }
 }

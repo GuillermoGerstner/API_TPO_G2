@@ -7,6 +7,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tpo_G2.ecommerce.exception.BadRequestException;
+import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
 import com.tpo_G2.ecommerce.model.*;
 import com.tpo_G2.ecommerce.repository.*;
 
@@ -21,15 +23,15 @@ public class CarritoService {
   private PedidoRepository pedidoRepository;
 
   public Carrito addProducto(Long carritoId, Long productoId, int cantidad){
-    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
-    Producto producto = productoRepository.findById(productoId).orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
+    Producto producto = productoRepository.findById(productoId).orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
     if(cantidad <= 0){
-      throw new RuntimeException("Cantidad debe ser mayor a 0");
+      throw new BadRequestException("Cantidad debe ser mayor a 0");
     }
     
     if(producto.getStock() < cantidad){
-      throw new RuntimeException("Sin stock");
+      throw new BadRequestException("Sin stock");
     }
 
     if(carrito.getItems() == null){
@@ -44,7 +46,7 @@ public class CarritoService {
       ItemCarrito item = itemExistente.get();
       int nuevaCantidad = item.getCantidad() + cantidad;
       if (nuevaCantidad > producto.getStock()) {
-        throw new RuntimeException("Sin stock suficiente");
+        throw new BadRequestException("Sin stock suficiente");
       }
       item.setCantidad(nuevaCantidad);
     } else {
@@ -60,26 +62,26 @@ public class CarritoService {
   }
   
   public Carrito getCarritoById(Long carritoId) {
-    return carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+    return carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
   }
 
   public Carrito deleteItem(Long carritoId, Long itemId){
-    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
 
     if(carrito.getItems() == null || carrito.getItems().isEmpty()){
-      throw new RuntimeException("El carrito está vacío");
+      throw new BadRequestException("El carrito está vacío");
     }
 
     boolean eliminado = carrito.getItems().removeIf(item -> item.getId().equals(itemId));
 
     if(!eliminado){
-      throw new RuntimeException("Item no encontrado en el carrito");
+      throw new ResourceNotFoundException("Item no encontrado en el carrito");
     }
     return carritoRepository.save(carrito);
   }
 
   public Carrito emptyCarrito(Long carritoId){
-    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
     
     if(carrito.getItems() != null){
       carrito.getItems().clear();
@@ -89,10 +91,10 @@ public class CarritoService {
 
   // De escalar deberiamos llevar el checkout a su propia clase de servicio, pero por ahora por simplicidad lo dejamos acá.
   public Pedido checkout(Long carritoId){
-    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new RuntimeException("Carrito no encontrado"));
+    Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
     
     if(carrito.getItems() == null || carrito.getItems().isEmpty()){
-      throw new RuntimeException("El carrito está vacío");
+      throw new BadRequestException("El carrito está vacío");
     }
 
     Pedido pedido = new Pedido();
@@ -104,7 +106,7 @@ public class CarritoService {
     for(ItemCarrito itemCarrito : carrito.getItems()){
       Producto producto = itemCarrito.getProducto();
       if(producto.getStock() < itemCarrito.getCantidad()){
-        throw new RuntimeException("Sin stock suficiente para el producto: " + producto.getNombre());
+        throw new BadRequestException("Sin stock suficiente para el producto: " + producto.getNombre());
       }
 
       producto.setStock(producto.getStock() - itemCarrito.getCantidad());

@@ -5,8 +5,11 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
 import com.tpo_G2.ecommerce.model.Categoria;
 import com.tpo_G2.ecommerce.repository.CategoriaRepository;
+
+import jakarta.annotation.Resource;
 
 @Service
 public class CategoriaService {
@@ -23,14 +26,14 @@ public class CategoriaService {
     }
 
     public Categoria getCategoriaById(Long id) {
-        return categoriaRepository.findById(id).orElse(null);
+        return categoriaRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada con id: " + id));
     }
 
     public Categoria deleteCategoriaById(Long id){
-        Categoria categoria = categoriaRepository.findById(id).orElse(null);
-        if(categoria != null){
-            categoriaRepository.deleteById(id);
-        }
+        Categoria categoria = categoriaRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Categoria no encontrada con id: " + id));
+        categoriaRepository.deleteById(id);
         return categoria;
     }
 }
