@@ -89,7 +89,6 @@ public class CarritoService {
     return carritoRepository.save(carrito);
   }
 
-  // De escalar deberiamos llevar el checkout a su propia clase de servicio, pero por ahora por simplicidad lo dejamos acá.
   public Pedido checkout(Long carritoId){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
     

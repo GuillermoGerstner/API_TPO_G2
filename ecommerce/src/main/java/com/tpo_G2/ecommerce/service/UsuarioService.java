@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
 import com.tpo_G2.ecommerce.model.Usuario;
 import com.tpo_G2.ecommerce.repository.UsuarioRepository;
 
@@ -21,7 +22,7 @@ public class UsuarioService {
     }
 
     public Usuario getUsuarioById(Long id) {
-        return usuarioRepository.findById(id).orElse(null);
+        return usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
     }
 
     public Usuario addUsuario(Usuario usuario) {
@@ -29,7 +30,7 @@ public class UsuarioService {
     }
 
     public Usuario updateUsuario(Long id, Usuario usuarioDetalles) {
-        Usuario usuario = usuarioRepository.findById(id).orElse(null);
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
         if (usuario != null) {
             usuario.setUsername(usuarioDetalles.getUsername());
             usuario.setNombre(usuarioDetalles.getNombre());
@@ -42,10 +43,8 @@ public class UsuarioService {
     }
 
     public Usuario deleteUsuarioById(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElse(null);
-        if (usuario != null) {
-            usuarioRepository.deleteById(id);
-        }
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+        usuarioRepository.deleteById(id);
         return usuario;
     }
 }

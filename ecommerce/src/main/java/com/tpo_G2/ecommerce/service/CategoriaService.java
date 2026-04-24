@@ -9,8 +9,6 @@ import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
 import com.tpo_G2.ecommerce.model.Categoria;
 import com.tpo_G2.ecommerce.repository.CategoriaRepository;
 
-import jakarta.annotation.Resource;
-
 @Service
 public class CategoriaService {
 

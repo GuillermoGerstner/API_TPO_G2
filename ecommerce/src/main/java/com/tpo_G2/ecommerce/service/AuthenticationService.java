@@ -10,11 +10,12 @@ import org.springframework.stereotype.Service;
 
 import com.tpo_G2.ecommerce.dto.LoginRequestDTO;
 import com.tpo_G2.ecommerce.dto.RegisterRequestDTO;
+import com.tpo_G2.ecommerce.exception.BadRequestException;
+import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
 import com.tpo_G2.ecommerce.model.Role;
 import com.tpo_G2.ecommerce.model.Usuario;
 import com.tpo_G2.ecommerce.repository.UsuarioRepository;
 import com.tpo_G2.ecommerce.security.JwtUtil;
-
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,18 +24,16 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Transactional
 public class AuthenticationService {
+
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
 
-    
     public String register(RegisterRequestDTO request) {
-
         
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            //Agregar GlobalException
-            throw new RuntimeException("El Email ya exsiste");
+            throw new BadRequestException("El mail ya existe");
         }
 
         Usuario usuario = Usuario.builder()
@@ -52,14 +51,13 @@ public class AuthenticationService {
 
     
     public String authenticate(LoginRequestDTO request) {
-        
        
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getEmail(),
                         request.getPassword()));
-        Usuario user = usuarioRepository.findByEmail(request.getEmail()).orElseThrow();
-        
+        Usuario user = usuarioRepository.findByEmail(request.getEmail())
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + request.getEmail()));
         
         Set<String> roles = user.getAuthorities().stream()
                 .map(grantedAuthority -> grantedAuthority.getAuthority())
