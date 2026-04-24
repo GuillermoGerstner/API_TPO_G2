@@ -2,15 +2,31 @@ package com.tpo_G2.ecommerce.service;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tpo_G2.ecommerce.dto.CarritoDTO;
+import com.tpo_G2.ecommerce.dto.CategoriaDTO;
+import com.tpo_G2.ecommerce.dto.ItemCarritoDTO;
+import com.tpo_G2.ecommerce.dto.ProductoDTO;
+import com.tpo_G2.ecommerce.dto.UsuarioDTO;
 import com.tpo_G2.ecommerce.exception.BadRequestException;
 import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
-import com.tpo_G2.ecommerce.model.*;
-import com.tpo_G2.ecommerce.repository.*;
+import com.tpo_G2.ecommerce.model.Carrito;
+import com.tpo_G2.ecommerce.model.Categoria;
+import com.tpo_G2.ecommerce.model.ItemCarrito;
+import com.tpo_G2.ecommerce.model.ItemPedido;
+import com.tpo_G2.ecommerce.model.Pedido;
+import com.tpo_G2.ecommerce.model.Producto;
+import com.tpo_G2.ecommerce.model.Usuario;
+import com.tpo_G2.ecommerce.repository.CarritoRepository;
+import com.tpo_G2.ecommerce.repository.PedidoRepository;
+import com.tpo_G2.ecommerce.repository.ProductoRepository;
+import com.tpo_G2.ecommerce.repository.UsuarioRepository;
 
 @Service
 public class CarritoService {
@@ -21,8 +37,20 @@ public class CarritoService {
   private ProductoRepository productoRepository;
   @Autowired
   private PedidoRepository pedidoRepository;
+  @Autowired
+  private UsuarioRepository usuarioRepository;
 
-  public Carrito addProducto(Long carritoId, Long productoId, int cantidad){
+  public CarritoDTO createCarrito(Long usuarioId) {
+    Usuario usuario = usuarioRepository.findById(usuarioId)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+    Carrito carrito = new Carrito();
+    carrito.setUsuario(usuario);
+
+    return toCarritoDTO(carritoRepository.save(carrito));
+}
+
+  public CarritoDTO addProducto(Long carritoId, Long productoId, int cantidad){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
     Producto producto = productoRepository.findById(productoId).orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
 
@@ -58,14 +86,18 @@ public class CarritoService {
 
           carrito.getItems().add(item);
     }
-    return carritoRepository.save(carrito);
+    Carrito carritoGuardado = carritoRepository.save(carrito);
+    return toCarritoDTO(carritoGuardado);
   }
   
-  public Carrito getCarritoById(Long carritoId) {
-    return carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
+  public CarritoDTO getCarritoById(Long carritoId) {
+    Carrito carrito = carritoRepository.findById(carritoId)
+            .orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
+
+    return toCarritoDTO(carrito);
   }
 
-  public Carrito deleteItem(Long carritoId, Long itemId){
+  public CarritoDTO deleteItem(Long carritoId, Long itemId){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
 
     if(carrito.getItems() == null || carrito.getItems().isEmpty()){
@@ -77,16 +109,16 @@ public class CarritoService {
     if(!eliminado){
       throw new ResourceNotFoundException("Item no encontrado en el carrito");
     }
-    return carritoRepository.save(carrito);
+    return toCarritoDTO(carritoRepository.save(carrito));
   }
 
-  public Carrito emptyCarrito(Long carritoId){
+  public CarritoDTO emptyCarrito(Long carritoId){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
     
     if(carrito.getItems() != null){
       carrito.getItems().clear();
     }
-    return carritoRepository.save(carrito);
+    return toCarritoDTO(carritoRepository.save(carrito));
   }
 
   public Pedido checkout(Long carritoId){
@@ -125,5 +157,59 @@ public class CarritoService {
     carrito.getItems().clear();
     carritoRepository.save(carrito);
     return pedidoGuardado;
+  }
+
+  private CarritoDTO toCarritoDTO(Carrito carrito) {
+    List<ItemCarritoDTO> itemsDTO = carrito.getItems().stream()
+            .map(this::toItemCarritoDTO)
+            .collect(Collectors.toList());
+
+    return new CarritoDTO(
+            carrito.getId(),
+            toUsuarioDTO(carrito.getUsuario()),
+            itemsDTO
+    );
+  }
+
+  private ItemCarritoDTO toItemCarritoDTO(ItemCarrito item) {
+    return new ItemCarritoDTO(
+            item.getId(),
+            item.getCantidad(),
+            item.getPrecioUnitario(),
+            toProductoDTO(item.getProducto())
+    );
+  }
+
+  private ProductoDTO toProductoDTO(Producto producto) {
+    return new ProductoDTO(
+            producto.getId(),
+            producto.getNombre(),
+            producto.getDescripcion(),
+            producto.getPrecio(),
+            producto.getStock(),
+            producto.getCategoria() != null ? toCategoriaDTO(producto.getCategoria()) : null
+    );
+  }
+
+  private CategoriaDTO toCategoriaDTO(Categoria categoria) {
+    return new CategoriaDTO(
+            categoria.getId(),
+            categoria.getNombre()
+    );
+  }
+
+  private UsuarioDTO toUsuarioDTO(Usuario usuario) {
+    if (usuario == null) {
+        return null;
+    }
+
+    return new UsuarioDTO(
+            usuario.getIdUsuario(),
+            usuario.getUsername(),
+            usuario.getEmail(),
+            usuario.getNombre(),
+            usuario.getApellido(),
+            usuario.getRole()
+    );
   }
 }

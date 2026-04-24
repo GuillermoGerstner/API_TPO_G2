@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tpo_G2.ecommerce.model.Pedido;
+import com.tpo_G2.ecommerce.dto.PedidoDTO;
 import com.tpo_G2.ecommerce.service.PedidoService;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,12 +19,12 @@ public class PedidoController {
     private PedidoService pedidoService;
 
     @GetMapping
-    public List<Pedido> getAllPedidos() {
+    public List<PedidoDTO> getAllPedidos() {
         return pedidoService.getAllPedidos();
     }
 
     @GetMapping("/{id}")
-    public Pedido getPedidoById(@PathVariable Long id) {
+    public PedidoDTO getPedidoById(@PathVariable Long id) {
         return pedidoService.getPedidoById(id);
     }
 }

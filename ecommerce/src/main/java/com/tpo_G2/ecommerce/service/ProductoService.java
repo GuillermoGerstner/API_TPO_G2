@@ -38,17 +38,11 @@ public class ProductoService {
     public ProductoDTO getProductoById(Long id) {
         Producto producto = productoRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
-        return new ProductoDTO(
-            producto.getId(),
-            producto.getNombre(),
-            producto.getDescripcion(),
-            producto.getPrecio(),
-            producto.getStock(),
-            producto.getCategoria() != null ? new CategoriaDTO(producto.getCategoria().getId(), producto.getCategoria().getNombre()) : null
-        );
+
+        return toProductoDTO(producto);
     }
 
-    public Producto addProducto(Producto producto) {
+    public ProductoDTO addProducto(Producto producto) {
         if(producto.getPrecio() < 0){
             throw new BadRequestException("El precio no puede ser negativo");
         }
@@ -57,18 +51,18 @@ public class ProductoService {
             throw new BadRequestException("El stock no puede ser negativo");
         }
 
-        return productoRepository.save(producto);
+        return toProductoDTO(productoRepository.save(producto));
     }
 
-    public Producto deleteProductoById(Long id) {
+    public ProductoDTO deleteProductoById(Long id) {
         Producto producto = productoRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
 
         productoRepository.deleteById(id);
-        return producto;
+        return toProductoDTO(producto);
     }
 
-    public Producto updateProducto(Long id, Producto productoActualizado) {
+    public ProductoDTO updateProducto(Long id, Producto productoActualizado) {
         Producto producto = productoRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
 
@@ -86,6 +80,19 @@ public class ProductoService {
         producto.setCategoria(productoActualizado.getCategoria());
         producto.setUsuario(productoActualizado.getUsuario());
 
-        return productoRepository.save(producto);
+        return toProductoDTO(productoRepository.save(producto));
+    }
+
+    private ProductoDTO toProductoDTO(Producto producto) {
+        return new ProductoDTO(
+                producto.getId(),
+                producto.getNombre(),
+                producto.getDescripcion(),
+                producto.getPrecio(),
+                producto.getStock(),
+                producto.getCategoria() != null
+                        ? new CategoriaDTO(producto.getCategoria().getId(), producto.getCategoria().getNombre())
+                        : null
+        );
     }
 }
