@@ -29,7 +29,7 @@ public class Direccion {
 
     @ManyToOne
     @JoinColumn(name = "id_usuario", nullable = false)
-    @JsonIgnore
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Usuario usuario;
 }
 
