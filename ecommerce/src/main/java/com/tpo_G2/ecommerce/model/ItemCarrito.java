@@ -21,7 +21,7 @@ public class ItemCarrito{
   private Long id;
 
   @Column(nullable = false)
-  private Integer cantidad;
+  private int cantidad;
 
   private double precioUnitario;
 
