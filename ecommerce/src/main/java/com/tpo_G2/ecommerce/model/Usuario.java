@@ -7,6 +7,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -15,6 +18,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,8 +50,22 @@ public class Usuario implements UserDetails{
     private String nombre;
     private String apellido;
 
+    // Relación 1:1 con Carrito
+    @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private Carrito carrito;
+
+    // Relación 1:N con Direcciones
+    @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    private List<Direccion> direcciones;
+
+    // Relación 1:N con Productos (creados por el usuario)
     @OneToMany(mappedBy = "usuario")
+    @JsonIgnore
     private List<Producto> productos;
+
+    // Relación 1:N con Pedidos
+    @OneToMany(mappedBy = "usuario")
+    private List<Pedido> pedidos;
 
     @Enumerated(EnumType.STRING)
     private Role role;
