@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
+import com.tpo_G2.ecommerce.model.Role;
 import com.tpo_G2.ecommerce.model.Usuario;
 import com.tpo_G2.ecommerce.repository.UsuarioRepository;
 
@@ -47,4 +48,11 @@ public class UsuarioService {
         usuarioRepository.deleteById(id);
         return usuario;
     }
+
+    public void actualizarRol(Long id, Role nuevoRol) {
+        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+        usuario.setRole(nuevoRol);
+        usuarioRepository.save(usuario);
+    }
+
 }

@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -67,18 +69,25 @@ public class SecurityConfig {
                     /*   SACAR LO COMENTADO para activar el sistema de autenticacion
                         // Rutas que requieren autenticación para modificar productos
 
-                        .requestMatchers(HttpMethod.POST, "/api/productos").authenticated() 
-                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").authenticated()
-
                         // Rutas exclusivas para administradores
                         //verifica que el usuario esté autenticado y tenga el rol ADMIN
                         .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name())
+                        //RUTAS PARA ADMIN
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole(Role.ADMIN.name())
 
+
+                        // RUTAS PARA ADMIN Y SELLER (Gestión de stock)
+                        .requestMatchers(HttpMethod.POST, "/api/productos").hasAnyRole("ADMIN", "SELLER")
+                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasAnyRole("ADMIN", "SELLER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasAnyRole("ADMIN", "SELLER")
+
+                    
+                        //RUTAS PARA USUARIOS REGISTRADOS 
                         .requestMatchers(HttpMethod.POST, "/api/categorias").authenticated() 
                         .requestMatchers(HttpMethod.PUT, "/api/categorias/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").authenticated()
-
                         .requestMatchers("/api/pedidos/**").authenticated()
                         .requestMatchers("/api/carrito/**").authenticated()
 
