@@ -24,5 +24,6 @@ public class ImagenProducto {
 
     @ManyToOne
     @JoinColumn(name = "id_producto", nullable = false)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private Producto producto;
 }
