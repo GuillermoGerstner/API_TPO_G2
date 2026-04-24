@@ -1,10 +1,13 @@
 package com.tpo_G2.ecommerce.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.tpo_G2.ecommerce.dto.CategoriaDTO;
+import com.tpo_G2.ecommerce.dto.ProductoDTO;
 import com.tpo_G2.ecommerce.exception.BadRequestException;
 import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
 import com.tpo_G2.ecommerce.model.Producto;
@@ -19,13 +22,30 @@ public class ProductoService {
     @Autowired
     private ProductoRepository productoRepository;
 
-    public List<Producto> getAllProductos() {
-        return productoRepository.findAll();
+    public List<ProductoDTO> getAllProductos() {
+        return productoRepository.findAll().stream()
+            .map(producto -> new ProductoDTO(
+                producto.getId(), 
+                producto.getNombre(), 
+                producto.getDescripcion(), 
+                producto.getPrecio(), 
+                producto.getStock(), 
+                producto.getCategoria() != null ? new CategoriaDTO(producto.getCategoria().getId(), producto.getCategoria().getNombre()) : null
+            ))
+            .collect(Collectors.toList());
     }
 
-    public Producto getProductoById(Long id) {
-        return productoRepository.findById(id)
+    public ProductoDTO getProductoById(Long id) {
+        Producto producto = productoRepository.findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
+        return new ProductoDTO(
+            producto.getId(),
+            producto.getNombre(),
+            producto.getDescripcion(),
+            producto.getPrecio(),
+            producto.getStock(),
+            producto.getCategoria() != null ? new CategoriaDTO(producto.getCategoria().getId(), producto.getCategoria().getNombre()) : null
+        );
     }
 
     public Producto addProducto(Producto producto) {

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.tpo_G2.ecommerce.dto.CategoriaDTO;
 import com.tpo_G2.ecommerce.model.Categoria;
 import com.tpo_G2.ecommerce.service.CategoriaService;
 
@@ -22,7 +23,7 @@ public class CategoriaController {
     private CategoriaService categoriaService;
 
     @GetMapping
-    public List<Categoria> getCategorias() {
+    public List<CategoriaDTO> getCategorias() {
         return categoriaService.getAllCategorias();
     }
 
@@ -32,7 +33,7 @@ public class CategoriaController {
     }
 
     @GetMapping("/{id}")
-    public Categoria getCategoriaById(@PathVariable Long id) {
+    public CategoriaDTO getCategoriaById(@PathVariable Long id) {
         return categoriaService.getCategoriaById(id);
     }
 
