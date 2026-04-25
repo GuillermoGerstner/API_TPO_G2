@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.tpo_G2.ecommerce.dto.CarritoDTO;
+import com.tpo_G2.ecommerce.dto.PedidoDTO;
 import com.tpo_G2.ecommerce.model.Pedido;
 import com.tpo_G2.ecommerce.service.CarritoService;
 
@@ -48,7 +49,7 @@ public class CarritoController {
     }
 
     @PostMapping("/{carritoId}/checkout")
-    public Pedido checkout(@PathVariable Long carritoId) {
+    public PedidoDTO checkout(@PathVariable Long carritoId) {
         return carritoService.checkout(carritoId);
     }
 }

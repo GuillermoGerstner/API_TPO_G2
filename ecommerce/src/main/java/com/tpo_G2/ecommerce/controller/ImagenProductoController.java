@@ -27,7 +27,7 @@ public class ImagenProductoController {
     }
 
     @GetMapping("/producto/{idProducto}")
-    public ResponseEntity<List<ImagenProducto>> listarPorProducto(@PathVariable Long id) {
+    public ResponseEntity<List<ImagenProducto>> listarPorProducto(@PathVariable("idProducto") Long id) {
         return ResponseEntity.ok(imagenService.listarPorProducto(id));
     }
 }

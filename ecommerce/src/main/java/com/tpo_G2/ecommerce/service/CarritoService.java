@@ -12,6 +12,8 @@ import org.springframework.stereotype.Service;
 import com.tpo_G2.ecommerce.dto.CarritoDTO;
 import com.tpo_G2.ecommerce.dto.CategoriaDTO;
 import com.tpo_G2.ecommerce.dto.ItemCarritoDTO;
+import com.tpo_G2.ecommerce.dto.ItemPedidoDTO;
+import com.tpo_G2.ecommerce.dto.PedidoDTO;
 import com.tpo_G2.ecommerce.dto.ProductoDTO;
 import com.tpo_G2.ecommerce.dto.UsuarioDTO;
 import com.tpo_G2.ecommerce.exception.BadRequestException;
@@ -46,6 +48,7 @@ public class CarritoService {
 
     Carrito carrito = new Carrito();
     carrito.setUsuario(usuario);
+    carrito.setItems(new ArrayList<>());
 
     return toCarritoDTO(carritoRepository.save(carrito));
 }
@@ -121,7 +124,7 @@ public class CarritoService {
     return toCarritoDTO(carritoRepository.save(carrito));
   }
 
-  public Pedido checkout(Long carritoId){
+  public PedidoDTO checkout(Long carritoId){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
     
     if(carrito.getItems() == null || carrito.getItems().isEmpty()){
@@ -132,6 +135,7 @@ public class CarritoService {
     pedido.setFecha(new Date());
     pedido.setEstado("CONFIRMADO");
     pedido.setUsuario(carrito.getUsuario());
+    pedido.setItems(new ArrayList<>());
 
     double total = 0;
     for(ItemCarrito itemCarrito : carrito.getItems()){
@@ -156,7 +160,7 @@ public class CarritoService {
     Pedido pedidoGuardado = pedidoRepository.save(pedido);
     carrito.getItems().clear();
     carritoRepository.save(carrito);
-    return pedidoGuardado;
+    return toPedidoDTO(pedidoGuardado);
   }
 
   private CarritoDTO toCarritoDTO(Carrito carrito) {
@@ -211,5 +215,27 @@ public class CarritoService {
             usuario.getApellido(),
             usuario.getRole()
     );
+  }
+
+  private PedidoDTO toPedidoDTO(Pedido pedido) {
+      return new PedidoDTO(
+              pedido.getId(),
+              pedido.getFecha(),
+              pedido.getEstado(),
+              pedido.getTotal(),
+              toUsuarioDTO(pedido.getUsuario()),
+              pedido.getItems().stream()
+                      .map(this::toItemPedidoDTO)
+                      .collect(Collectors.toList())
+      );
+  }
+
+  private ItemPedidoDTO toItemPedidoDTO(ItemPedido item) {
+      return new ItemPedidoDTO(
+              item.getId(),
+              item.getCantidad(),
+              item.getPrecioUnitario(),
+              toProductoDTO(item.getProducto())
+      );
   }
 }
