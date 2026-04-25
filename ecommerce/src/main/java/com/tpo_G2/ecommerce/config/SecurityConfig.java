@@ -66,7 +66,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll() 
 
-                    /*   SACAR LO COMENTADO para activar el sistema de autenticacion
                         // Rutas que requieren autenticación para modificar productos
 
                         // Rutas exclusivas para administradores
@@ -82,7 +81,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/productos").hasAnyRole("ADMIN", "SELLER")
                         .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasAnyRole("ADMIN", "SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasAnyRole("ADMIN", "SELLER")
-
+                        .requestMatchers("/api/imagenes-productos/**").hasAnyRole("ADMIN", "SELLER")
                     
                         //RUTAS PARA USUARIOS REGISTRADOS 
                         .requestMatchers(HttpMethod.POST, "/api/categorias").authenticated() 
@@ -90,13 +89,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").authenticated()
                         .requestMatchers("/api/pedidos/**").authenticated()
                         .requestMatchers("/api/carrito/**").authenticated()
+                        .requestMatchers("/api/direcciones/**").authenticated()
 
                         .anyRequest().authenticated())
-                    */
-                       
-
-                        .anyRequest().permitAll()) // Esta linea permite usar cualquier endpoint sin autenticacion, comentarla si se activa la autenticacion
-                        
+                    
+                                               
                         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
