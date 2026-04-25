@@ -16,11 +16,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.tpo_G2.ecommerce.model.Role;
-
 import com.tpo_G2.ecommerce.repository.UsuarioRepository;
-
 import com.tpo_G2.ecommerce.security.JwtFilter;
-
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 @EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-
 
     private final JwtFilter jwtFilter;
 
@@ -40,13 +36,11 @@ public class SecurityConfig {
         return username -> usuarioRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado")); //Agregar GlobalException
     }
-
     
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
-
     
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -72,28 +66,28 @@ public class SecurityConfig {
                         //verifica que el usuario esté autenticado y tenga el rol ADMIN
                         .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name())
                         //RUTAS PARA ADMIN
+                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole(Role.ADMIN.name())
-
+                        
+                        .requestMatchers(HttpMethod.POST, "/api/categorias").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.PUT, "/api/categorias/**").hasRole(Role.ADMIN.name())
 
                         // RUTAS PARA ADMIN Y SELLER (Gestión de stock)
                         .requestMatchers(HttpMethod.POST, "/api/productos").hasAnyRole("ADMIN", "SELLER")
                         .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasAnyRole("ADMIN", "SELLER")
                         .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasAnyRole("ADMIN", "SELLER")
-                        .requestMatchers("/api/imagenes-productos/**").hasAnyRole("ADMIN", "SELLER")
                     
-                        //RUTAS PARA USUARIOS REGISTRADOS 
-                        .requestMatchers(HttpMethod.POST, "/api/categorias").authenticated() 
-                        .requestMatchers(HttpMethod.PUT, "/api/categorias/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").authenticated()
+                        //RUTAS PARA USUARIOS REGISTRADOS 																	  										 
                         .requestMatchers("/api/pedidos/**").authenticated()
                         .requestMatchers("/api/carrito/**").authenticated()
                         .requestMatchers("/api/direcciones/**").authenticated()
+                        .requestMatchers("/api/imagenes-productos/**").hasAnyRole("ADMIN", "SELLER")
 
                         .anyRequest().authenticated())
-                    
-                                               
+                        
                         .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
