@@ -15,6 +15,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -30,11 +32,15 @@ public class Carrito{
   @OneToOne
   @JoinColumn(name = "id_usuario", nullable = false)
   @JsonIgnore // Evita que el carrito intente mostrar al usuario de nuevo
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private Usuario usuario;
   
   // Relación 1:N con los ítems del carrito
   // CascadeType.ALL para que al limpiar/borrar el carrito se gestionen sus ítems
   // orphanRemoval = true es útil para "limpiar" el carrito quitando elementos de la lista
   @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private List<ItemCarrito> items;
 }

@@ -13,7 +13,10 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -46,10 +49,14 @@ public class Pedido{
   @Column(name = "direccion_envio_pais")
   private String pais;
 
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   @ManyToOne
   @JoinColumn(name = "id_usuario", nullable = false)
   private Usuario usuario;
 
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
   private List<ItemPedido> items;
 }

@@ -15,6 +15,8 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -55,9 +57,13 @@ public class Producto {
     // Se usa mappedBy porque el ID del producto está físicamente en las tablas de ítems
     @OneToMany(mappedBy = "producto")
     @JsonIgnore // Evita que al ver un producto se listen todos los carritos donde aparece
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ItemCarrito> itemsCarrito;
 
     @OneToMany(mappedBy = "producto")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ItemPedido> itemsPedido;
     
 }

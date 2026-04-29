@@ -24,6 +24,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @Builder
@@ -52,19 +54,27 @@ public class Usuario implements UserDetails{
 
     // Relación 1:1 con Carrito
     @OneToOne(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Carrito carrito;
 
     // Relación 1:N con Direcciones
     @OneToMany(mappedBy = "usuario", cascade = CascadeType.ALL)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Direccion> direcciones;
 
     // Relación 1:N con Productos (creados por el usuario)
     @OneToMany(mappedBy = "usuario")
     @JsonIgnore
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Producto> productos;
 
     // Relación 1:N con Pedidos
     @OneToMany(mappedBy = "usuario")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Pedido> pedidos;
 
     @Enumerated(EnumType.STRING)

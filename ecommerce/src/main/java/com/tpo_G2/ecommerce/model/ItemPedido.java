@@ -10,6 +10,8 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Data
 @Entity
@@ -29,6 +31,8 @@ public class ItemPedido{
   @ManyToOne
   @JoinColumn(name = "id_pedido", nullable = false)
   @JsonIgnore // Solo queremos ver el producto y cantidad, no volver a ver todo el carrito/pedido
+  @ToString.Exclude
+  @EqualsAndHashCode.Exclude
   private Pedido pedido;
 
   @ManyToOne
