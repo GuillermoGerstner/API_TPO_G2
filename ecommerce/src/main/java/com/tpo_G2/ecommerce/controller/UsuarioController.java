@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tpo_G2.ecommerce.model.Usuario;
 import com.tpo_G2.ecommerce.service.UsuarioService;
+import com.tpo_G2.ecommerce.dto.UsuarioDTO;
+
 
 @RestController
 @RequestMapping("/api/usuarios")
@@ -21,28 +23,35 @@ public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
 
-    @GetMapping
+    //MAL
+/*  @GetMapping
     public List<Usuario> getAllUsuarios() {
         return usuarioService.getAllUsuarios();
+    }*/
+
+    //Corrección en base a los comentarios del profesor
+    @GetMapping
+    public List<UsuarioDTO> getAllUsuarios() {
+        return usuarioService.getAllUsuarios();  // DTO sin password
     }
     
     @GetMapping("/{idUsuario}")
-    public Usuario getUsuarioById(@PathVariable Long idUsuario) {
+    public UsuarioDTO getUsuarioById(@PathVariable Long idUsuario) {
         return usuarioService.getUsuarioById(idUsuario);
     }
 
     @PostMapping
-    public Usuario addUsuario(@RequestBody Usuario usuario) {
+    public UsuarioDTO addUsuario(@RequestBody Usuario usuario) {
         return usuarioService.addUsuario(usuario);
     }
 
     @PutMapping("/{idUsuario}")
-    public Usuario updateUsuario(@PathVariable Long idUsuario, @RequestBody Usuario usuario) {
+    public UsuarioDTO updateUsuario(@PathVariable Long idUsuario, @RequestBody Usuario usuario) {
         return usuarioService.updateUsuario(idUsuario, usuario);
     }
 
     @DeleteMapping("/{idUsuario}")
-    public Usuario deleteUsuarioById(@PathVariable Long idUsuario) {
+    public UsuarioDTO deleteUsuarioById(@PathVariable Long idUsuario) {
         return usuarioService.deleteUsuarioById(idUsuario);
     }
 }
