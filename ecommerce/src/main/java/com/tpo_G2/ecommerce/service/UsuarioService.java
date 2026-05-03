@@ -37,7 +37,7 @@ public class UsuarioService {
             usuario.setNombre(usuarioDetalles.getNombre());
             usuario.setApellido(usuarioDetalles.getApellido());
             usuario.setEmail(usuarioDetalles.getEmail());
-            usuario.setPassword(usuarioDetalles.getPassword());
+            usuario.setPassword(passwordEncoder.encode(request.getNewPassword())); //Corrección en base a la devolución del tpo 1
             return usuarioRepository.save(usuario);
         }
         return null;
