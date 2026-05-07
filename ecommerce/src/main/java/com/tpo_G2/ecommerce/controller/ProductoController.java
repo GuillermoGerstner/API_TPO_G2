@@ -14,9 +14,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import com.tpo_G2.ecommerce.dto.ProductoDTO;
 import com.tpo_G2.ecommerce.model.Producto;
 import com.tpo_G2.ecommerce.service.ProductoService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/productos")
@@ -35,8 +38,8 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductoDTO> addProducto(@Valid @RequestBody CreateProductoDTO request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(productoService.addProducto(producto));
+    public ResponseEntity<ProductoDTO> addProducto(@Valid @RequestBody Producto request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(productoService.addProducto(request));
     }
 
     @DeleteMapping("/{id}")

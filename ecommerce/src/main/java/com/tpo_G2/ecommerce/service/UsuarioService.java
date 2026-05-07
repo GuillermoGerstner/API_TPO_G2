@@ -1,14 +1,19 @@
 package com.tpo_G2.ecommerce.service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.tpo_G2.ecommerce.dto.RegisterRequestDTO;
+import com.tpo_G2.ecommerce.dto.UsuarioDTO;
 import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
 import com.tpo_G2.ecommerce.model.Role;
 import com.tpo_G2.ecommerce.model.Usuario;
 import com.tpo_G2.ecommerce.repository.UsuarioRepository;
+
 
 import jakarta.transaction.Transactional;
 
@@ -17,42 +22,85 @@ import jakarta.transaction.Transactional;
 public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder; 
 
-    public List<Usuario> getAllUsuarios() {
-        return usuarioRepository.findAll();
+   public List<UsuarioDTO> getAllUsuarios() {
+    List<Usuario> usuarios = usuarioRepository.findAll();
+
+    return usuarios.stream()
+        .map(usuario -> new UsuarioDTO(
+            usuario.getIdUsuario(),
+            usuario.getUsername(),
+            usuario.getNombre(),
+            usuario.getApellido(),
+            usuario.getEmail(),
+            usuario.getRole()
+        ))
+        .collect(Collectors.toList());
     }
 
-    public Usuario getUsuarioById(Long id) {
-        return usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+    public UsuarioDTO getUsuarioById(Long id) {
+        Usuario usuario = usuarioRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+        return toUsuarioDTO(usuario);
     }
 
-    public Usuario addUsuario(Usuario usuario) {
-        return usuarioRepository.save(usuario);
+
+    public UsuarioDTO addUsuario(RegisterRequestDTO registroDTO) {
+        Usuario usuario = new Usuario();
+        usuario.setNombre(registroDTO.getNombre());
+        usuario.setApellido(registroDTO.getApellido());
+        usuario.setUsername(registroDTO.getUsername());
+        usuario.setEmail(registroDTO.getEmail());
+        usuario.setRole(Role.USER);
+
+        usuario.setPassword(passwordEncoder.encode(registroDTO.getPassword()));
+
+        return toUsuarioDTO(usuarioRepository.save(usuario));
     }
 
-    public Usuario updateUsuario(Long id, Usuario usuarioDetalles) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
-        if (usuario != null) {
-            usuario.setUsername(usuarioDetalles.getUsername());
-            usuario.setNombre(usuarioDetalles.getNombre());
-            usuario.setApellido(usuarioDetalles.getApellido());
-            usuario.setEmail(usuarioDetalles.getEmail());
-            usuario.setPassword(passwordEncoder.encode(request.getNewPassword())); //Corrección en base a la devolución del tpo 1
-            return usuarioRepository.save(usuario);
-        }
-        return null;
+
+    public UsuarioDTO updateUsuario(Long id, RegisterRequestDTO usuarioDetalles) {
+    Usuario usuario = usuarioRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+
+    usuario.setUsername(usuarioDetalles.getUsername());
+    usuario.setNombre(usuarioDetalles.getNombre());
+    usuario.setApellido(usuarioDetalles.getApellido());
+    usuario.setEmail(usuarioDetalles.getEmail());
+
+    if (usuarioDetalles.getPassword() != null && !usuarioDetalles.getPassword().isBlank()) {
+        usuario.setPassword(passwordEncoder.encode(usuarioDetalles.getPassword()));
     }
 
-    public Usuario deleteUsuarioById(Long id) {
-        Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
-        usuarioRepository.deleteById(id);
-        return usuario;
-    }
+    return toUsuarioDTO(usuarioRepository.save(usuario));
+}
+
+    public UsuarioDTO deleteUsuarioById(Long id) {
+    Usuario usuario = usuarioRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
+    
+    usuarioRepository.deleteById(id);
+    
+    return toUsuarioDTO(usuario);
+}
 
     public void actualizarRol(Long id, Role nuevoRol) {
         Usuario usuario = usuarioRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + id));
         usuario.setRole(nuevoRol);
         usuarioRepository.save(usuario);
     }
+
+    private UsuarioDTO toUsuarioDTO(Usuario usuario) {
+    return new UsuarioDTO(
+        usuario.getIdUsuario(),
+        usuario.getUsername(),
+        usuario.getEmail(),
+        usuario.getNombre(),
+        usuario.getApellido(),
+        usuario.getRole()
+    );
+}
 
 }

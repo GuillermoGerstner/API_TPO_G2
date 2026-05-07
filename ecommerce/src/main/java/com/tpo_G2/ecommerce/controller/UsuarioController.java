@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.tpo_G2.ecommerce.model.Usuario;
 import com.tpo_G2.ecommerce.service.UsuarioService;
+import com.tpo_G2.ecommerce.dto.RegisterRequestDTO;
 import com.tpo_G2.ecommerce.dto.UsuarioDTO;
 
 
@@ -22,12 +22,6 @@ import com.tpo_G2.ecommerce.dto.UsuarioDTO;
 public class UsuarioController {
     @Autowired
     private UsuarioService usuarioService;
-
-    //MAL
-/*  @GetMapping
-    public List<Usuario> getAllUsuarios() {
-        return usuarioService.getAllUsuarios();
-    }*/
 
     //Corrección en base a los comentarios del profesor
     @GetMapping
@@ -41,12 +35,12 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public UsuarioDTO addUsuario(@RequestBody Usuario usuario) {
+    public UsuarioDTO addUsuario(@RequestBody RegisterRequestDTO usuario) {
         return usuarioService.addUsuario(usuario);
     }
 
     @PutMapping("/{idUsuario}")
-    public UsuarioDTO updateUsuario(@PathVariable Long idUsuario, @RequestBody Usuario usuario) {
+    public UsuarioDTO updateUsuario(@PathVariable Long idUsuario, @RequestBody RegisterRequestDTO usuario) {
         return usuarioService.updateUsuario(idUsuario, usuario);
     }
 
