@@ -10,7 +10,7 @@ import com.tpo_G2.ecommerce.dto.LoginRequestDTO;
 import com.tpo_G2.ecommerce.dto.RegisterRequestDTO;
 import com.tpo_G2.ecommerce.service.AuthenticationService;
 
-
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -21,12 +21,12 @@ public class AuthenticationController {
     private final AuthenticationService authenticationService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> register(@RequestBody RegisterRequestDTO request) {
+    public ResponseEntity<String> register(@Valid @RequestBody RegisterRequestDTO request) {
         return ResponseEntity.ok(authenticationService.register(request));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDTO request) {
+    public ResponseEntity<String> login(@Valid @RequestBody LoginRequestDTO request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 

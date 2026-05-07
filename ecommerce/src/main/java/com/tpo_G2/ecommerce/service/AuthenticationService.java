@@ -33,7 +33,7 @@ public class AuthenticationService {
     public String register(RegisterRequestDTO request) {
         
         if (usuarioRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("El mail ya existe");
+            throw new BadRequestException("No se pudo registrar el usuario");
         }
 
         Usuario usuario = Usuario.builder()
