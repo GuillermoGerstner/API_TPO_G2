@@ -29,14 +29,7 @@ public class UsuarioService {
     List<Usuario> usuarios = usuarioRepository.findAll();
 
     return usuarios.stream()
-        .map(usuario -> new UsuarioDTO(
-            usuario.getIdUsuario(),
-            usuario.getUsername(),
-            usuario.getNombre(),
-            usuario.getApellido(),
-            usuario.getEmail(),
-            usuario.getRole()
-        ))
+        .map(this::toUsuarioDTO)
         .collect(Collectors.toList());
     }
 

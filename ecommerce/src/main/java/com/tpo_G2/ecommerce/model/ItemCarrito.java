@@ -25,7 +25,7 @@ public class ItemCarrito{
   @Column(nullable = false)
   private int cantidad;
 
-  private double precioUnitario;
+  private Float precioUnitario;
 
   // Relación con el Carrito al que pertenece
   @ManyToOne

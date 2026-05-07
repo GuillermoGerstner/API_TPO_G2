@@ -26,7 +26,7 @@ public class ItemPedido{
   private int cantidad;
 
   @Column(name = "precio_unitario", nullable = false)
-  private double precioUnitario;
+  private Float precioUnitario;
 
   @ManyToOne
   @JoinColumn(name = "id_pedido", nullable = false)

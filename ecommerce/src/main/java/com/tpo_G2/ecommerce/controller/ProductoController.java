@@ -14,9 +14,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-
+import com.tpo_G2.ecommerce.dto.CreateProductoDTO;
 import com.tpo_G2.ecommerce.dto.ProductoDTO;
-import com.tpo_G2.ecommerce.model.Producto;
 import com.tpo_G2.ecommerce.service.ProductoService;
 
 import jakarta.validation.Valid;
@@ -38,7 +37,7 @@ public class ProductoController {
     }
 
     @PostMapping
-    public ResponseEntity<ProductoDTO> addProducto(@Valid @RequestBody Producto request) {
+    public ResponseEntity<ProductoDTO> addProducto(@Valid @RequestBody CreateProductoDTO request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(productoService.addProducto(request));
     }
 
@@ -48,7 +47,7 @@ public class ProductoController {
     }
 
     @PutMapping("/{id}")
-    public ProductoDTO updateProducto(@PathVariable Long id, @RequestBody Producto producto) {
-        return productoService.updateProducto(id, producto);
+    public ProductoDTO updateProducto(@PathVariable Long id, @Valid @RequestBody CreateProductoDTO request) {
+        return productoService.updateProducto(id, request);
     }
 }

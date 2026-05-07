@@ -7,11 +7,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.tpo_G2.ecommerce.dto.CategoriaDTO;
+import com.tpo_G2.ecommerce.dto.CreateProductoDTO;
 import com.tpo_G2.ecommerce.dto.ProductoDTO;
 import com.tpo_G2.ecommerce.exception.BadRequestException;
 import com.tpo_G2.ecommerce.exception.ResourceNotFoundException;
+import com.tpo_G2.ecommerce.model.Categoria;
 import com.tpo_G2.ecommerce.model.Producto;
+import com.tpo_G2.ecommerce.model.Usuario;
+import com.tpo_G2.ecommerce.repository.CategoriaRepository;
 import com.tpo_G2.ecommerce.repository.ProductoRepository;
+import com.tpo_G2.ecommerce.repository.UsuarioRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -21,6 +26,12 @@ public class ProductoService {
 
     @Autowired
     private ProductoRepository productoRepository;
+
+    @Autowired
+    private UsuarioRepository usuarioRepository;
+
+    @Autowired
+    private CategoriaRepository categoriaRepository;
 
     public List<ProductoDTO> getAllProductos() {
         return productoRepository.findAll().stream()
@@ -42,14 +53,28 @@ public class ProductoService {
         return toProductoDTO(producto);
     }
 
-    public ProductoDTO addProducto(Producto producto) {
-        if(producto.getPrecio() < 0){
+    public ProductoDTO addProducto(CreateProductoDTO request) {
+        if (request.getPrecio() < 0) {
             throw new BadRequestException("El precio no puede ser negativo");
         }
 
-        if(producto.getStock() < 0){
+        if (request.getStock() < 0) {
             throw new BadRequestException("El stock no puede ser negativo");
         }
+
+        Usuario usuario = usuarioRepository.findById(request.getIdUsuario())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + request.getIdUsuario()));
+
+        Categoria categoria = categoriaRepository.findById(request.getIdCategoria())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + request.getIdCategoria()));
+
+        Producto producto = new Producto();
+        producto.setNombre(request.getNombre());
+        producto.setDescripcion(request.getDescripcion());
+        producto.setPrecio(request.getPrecio());
+        producto.setStock(request.getStock());
+        producto.setUsuario(usuario);
+        producto.setCategoria(categoria);
 
         return toProductoDTO(productoRepository.save(producto));
     }
@@ -62,23 +87,30 @@ public class ProductoService {
         return toProductoDTO(producto);
     }
 
-    public ProductoDTO updateProducto(Long id, Producto productoActualizado) {
+    public ProductoDTO updateProducto(Long id, CreateProductoDTO request) {
         Producto producto = productoRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
+                .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado con id: " + id));
 
-        if(productoActualizado.getPrecio() < 0){
+        if (request.getPrecio() < 0) {
             throw new BadRequestException("El precio no puede ser negativo");
         }
-        if(productoActualizado.getStock() < 0){
+
+        if (request.getStock() < 0) {
             throw new BadRequestException("El stock no puede ser negativo");
         }
 
-        producto.setNombre(productoActualizado.getNombre());
-        producto.setDescripcion(productoActualizado.getDescripcion());
-        producto.setPrecio(productoActualizado.getPrecio());
-        producto.setStock(productoActualizado.getStock());
-        producto.setCategoria(productoActualizado.getCategoria());
-        producto.setUsuario(productoActualizado.getUsuario());
+        Usuario usuario = usuarioRepository.findById(request.getIdUsuario())
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con id: " + request.getIdUsuario()));
+
+        Categoria categoria = categoriaRepository.findById(request.getIdCategoria())
+                .orElseThrow(() -> new ResourceNotFoundException("Categoría no encontrada con id: " + request.getIdCategoria()));
+
+        producto.setNombre(request.getNombre());
+        producto.setDescripcion(request.getDescripcion());
+        producto.setPrecio(request.getPrecio());
+        producto.setStock(request.getStock());
+        producto.setUsuario(usuario);
+        producto.setCategoria(categoria);
 
         return toProductoDTO(productoRepository.save(producto));
     }

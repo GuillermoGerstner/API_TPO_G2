@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tpo_G2.ecommerce.dto.CarritoDTO;
 import com.tpo_G2.ecommerce.dto.PedidoDTO;
-import com.tpo_G2.ecommerce.model.Pedido;
 import com.tpo_G2.ecommerce.service.CarritoService;
 
 @RestController
