@@ -28,9 +28,4 @@ Proyecto Backend desarrollado con Spring Boot para la materia Aplicaciones Inter
 - Tests unitarios con JUnit y Mockito
 
 ## Videos explicativos
-
-### Actividad 1 - Backend Ecommerce
-🔗 [Ver video]([https://drive.google.com/](https://drive.google.com/file/d/1dqxLsTeVMurIxoIcUTCNpvyEudigiZpr/view?usp=sharing))
-
-### Actividad Obligatoria 2 - JWT, Docker y Testing
-🔗 [Ver video]([https://drive.google.com/](https://drive.google.com/file/d/1fhTm0wtczqNUFpKFuZL1fCbm-mS-E4l2/view?usp=sharing))
+🔗 [Ver videos](https://drive.google.com/drive/folders/1nw67WkvJYUpSgPgDgr9Dc6mZpjqjY1jE?usp=sharing)
