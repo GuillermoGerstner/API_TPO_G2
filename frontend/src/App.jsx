@@ -4,15 +4,15 @@ import {
   Route,
 } from "react-router-dom";
 
-import Navbar from "./components/Navbar";
-import Inicio from "./pages/Inicio";
-import DetalleProducto from "./pages/DetalleProducto";
-import Carrito from "./pages/Carrito";
-import Login from "./pages/Login";
-import GestionProductos from "./pages/GestionProductos";
-import FormularioProducto from "./pages/FormularioProducto";
+import Navbar from "./componentes/Navbar";
+import Inicio from "./paginas/Inicio";
+import DetalleProducto from "./paginas/DetalleProducto";
+import Carrito from "./paginas/Carrito";
+import Login from "./paginas/Login";
+import GestionProductos from "./paginas/GestionProductos";
+import FormularioProducto from "./paginas/FormularioProducto";
 
-import {CarritoProvider} from "./context/CarritoProvider";
+import {CarritoProvider} from "./contexto/CarritoProvider";
 
 function App() {
   return (
