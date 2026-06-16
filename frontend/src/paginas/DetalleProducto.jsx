@@ -11,7 +11,7 @@ import {
 
 import api from "../api/api";
 
-import {CarritoContext} from "../context/CarritoProvider";
+import {CarritoContext} from "../contexto/CarritoProvider";
 
 function DetalleProducto() {
     const {id} = useParams();
