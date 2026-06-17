@@ -24,7 +24,7 @@ function DetalleProducto() {
 
     useEffect(() => {
         api
-            .get('/productos/${id}')
+            .get(`/productos/${id}`)
             .then((res) => setProducto(res.data));
     }, [id]);
 
