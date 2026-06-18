@@ -28,68 +28,59 @@ import lombok.RequiredArgsConstructor;
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
-
     private final UsuarioRepository usuarioRepository;
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return username -> usuarioRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado")); //Agregar GlobalException
-    }
-    
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-    
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
-    // Reglas de seguridad
-    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Rutas públicas que no requieren autenticación
+                        // RUTAS PÚBLICAS (Permitidas sin Token)
                         .requestMatchers("/api/auth/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/productos/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll() 
-
-                        // Rutas que requieren autenticación para modificar productos
-
-                        // Rutas exclusivas para administradores
-                        //verifica que el usuario esté autenticado y tenga el rol ADMIN
-                        .requestMatchers("/api/admin/**").hasRole(Role.ADMIN.name())
-                        //RUTAS PARA ADMIN
-                        .requestMatchers(HttpMethod.GET, "/api/usuarios/**").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.POST, "/api/usuarios").hasRole(Role.ADMIN.name())
-                        .requestMatchers(HttpMethod.PUT, "/api/usuarios/**").hasRole(Role.ADMIN.name())
+                        .requestMatchers(HttpMethod.GET, "/api/categorias/**").permitAll()
+                        
+                        // RUTAS EXCLUSIVAS DE ADMINISTRADOR
+                        .requestMatchers(HttpMethod.POST, "/api/usuarios/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/usuarios/**").hasRole(Role.ADMIN.name())
                         
                         .requestMatchers(HttpMethod.POST, "/api/categorias").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.DELETE, "/api/categorias/**").hasRole(Role.ADMIN.name())
                         .requestMatchers(HttpMethod.PUT, "/api/categorias/**").hasRole(Role.ADMIN.name())
 
-                        // RUTAS PARA ADMIN Y SELLER (Gestión de stock)
-                        .requestMatchers(HttpMethod.POST, "/api/productos").hasAnyRole("ADMIN", "SELLER")
-                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasAnyRole("ADMIN", "SELLER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasAnyRole("ADMIN", "SELLER")
+                        // 🔓 RUTAS MODIFICADAS: Cualquier usuario registrado (autenticado) puede gestionar sus productos
+                        .requestMatchers(HttpMethod.POST, "/api/productos").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").authenticated()
                     
-                        //RUTAS PARA USUARIOS REGISTRADOS 																	  										 
+                        // RUTAS DE LOGÍSTICA Y CLIENTE (Requieren estar autenticado)
                         .requestMatchers("/api/pedidos/**").authenticated()
                         .requestMatchers("/api/carrito/**").authenticated()
                         .requestMatchers("/api/direcciones/**").authenticated()
-                        .requestMatchers("/api/imagenes-productos/**").hasAnyRole("ADMIN", "SELLER")
+                        
+                        // 🔓 IMÁGENES MODIFICADAS: Permitir subida si está logueado
+                        .requestMatchers("/api/imagenes-productos/**").authenticated()
 
                         .anyRequest().authenticated())
                         
-                        .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public UserDetailsService userDetailsService() {
+        return username -> usuarioRepository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con email: " + username));
     }
 }

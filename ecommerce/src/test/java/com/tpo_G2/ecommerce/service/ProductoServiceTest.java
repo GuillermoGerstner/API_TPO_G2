@@ -1,20 +1,19 @@
 package com.tpo_G2.ecommerce.service;
 
+import java.util.Optional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.util.Optional;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.tpo_G2.ecommerce.dto.CreateProductoDTO;
@@ -51,6 +50,7 @@ public class ProductoServiceTest {
         usuario = new Usuario();
         usuario.setIdUsuario(1L);
         usuario.setNombre("Admin");
+        usuario.setEmail("admin@ecommerce.com"); // 👈 Agregamos el email para el Mock
 
         categoria = new Categoria();
         categoria.setId(1L);
@@ -76,11 +76,13 @@ public class ProductoServiceTest {
         request.setIdUsuario(1L);
         request.setIdCategoria(1L);
 
-        when(usuarioRepository.findById(1L)).thenReturn(Optional.of(usuario));
+        // 🔑 CAMBIO CLAVE: El servicio ahora busca por email en vez de por ID
+        when(usuarioRepository.findByEmail("admin@ecommerce.com")).thenReturn(Optional.of(usuario));
         when(categoriaRepository.findById(1L)).thenReturn(Optional.of(categoria));
         when(productoRepository.save(any(Producto.class))).thenReturn(producto);
 
-        ProductoDTO resultado = productoService.addProducto(request);
+        // 🚀 LLAMADA CORREGIDA: Usamos el nuevo método pasándole el email simulado
+        ProductoDTO resultado = productoService.addProductoConEmail(request, "admin@ecommerce.com");
 
         assertNotNull(resultado);
         assertEquals("Notebook i7", resultado.getNombre());
