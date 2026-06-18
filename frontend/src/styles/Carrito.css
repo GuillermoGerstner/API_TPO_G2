@@ -1,0 +1,253 @@
+/* src/styles/Carrito.css */
+
+.carrito-pagina-contenedor {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 30px 20px;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.carrito-titulo-principal {
+  font-size: 24px;
+  font-weight: 700;
+  color: #000000;
+  margin-bottom: 24px;
+}
+
+.carrito-titulo-principal .items-count {
+  font-weight: 400;
+  color: #4b5563;
+}
+
+/* Distribución en dos columnas */
+.carrito-layout {
+  display: flex;
+  gap: 30px;
+  align-items: flex-start;
+}
+
+/* Caja de la tabla izquierda */
+.tabla-productos-contenedor {
+  flex: 2;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  overflow: hidden;
+  padding-bottom: 20px;
+}
+
+.carrito-tabla {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.carrito-tabla th {
+  padding: 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.carrito-tabla td {
+  padding: 16px;
+  vertical-align: middle;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Celda compleja del producto */
+.celda-producto {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.prod-img-box {
+  width: 70px;
+  height: 70px;
+  border: 1px solid #cccccc;
+  border-radius: 8px;
+  padding: 4px;
+  background-color: #ffffff;
+}
+
+.prod-img-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.prod-info-text h4 {
+  margin: 0 0 4px 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.prod-precio-mini {
+  display: block;
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 500;
+}
+
+.prod-stock-mini {
+  display: block;
+  font-size: 11px;
+  color: #6b7280;
+  margin-top: 2px;
+}
+
+/* Formatos de precios y subtotales */
+.celda-precio-u,
+.celda-subtotal {
+  font-size: 15px;
+  font-weight: 500;
+  color: #000000;
+}
+
+/* Selector incremental estilo figma (- 1 +) */
+.counter-container {
+  display: inline-flex;
+  align-items: center;
+  background-color: #f3f4f6;
+  border: 1px solid #9ca3af;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.counter-container button {
+  background: none;
+  border: none;
+  width: 28px;
+  height: 28px;
+  font-size: 16px;
+  cursor: pointer;
+  color: #1f2937;
+  transition: background-color 0.1s;
+}
+
+.counter-container button:hover {
+  background-color: #e5e7eb;
+}
+
+.counter-value {
+  padding: 0 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #000000;
+  min-width: 16px;
+  text-align: center;
+}
+
+/* Botón tachito */
+.btn-trash {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.btn-trash:hover {
+  transform: scale(1.15);
+}
+
+/* Botón inferior vaciar */
+.tabla-footer-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 16px 0 16px;
+}
+
+.btn-vaciar {
+  background-color: #000000;
+  color: #ffffff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-vaciar:hover {
+  background-color: #1f2937;
+}
+
+/* TARJETA DE RESUMEN DE COMPRA (DERECHA) */
+.resumen-compra-tarjeta {
+  flex: 0.9;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.resumen-compra-tarjeta h3 {
+  margin: 0 0 20px 0;
+  font-size: 18px;
+  font-weight: 700;
+  color: #000000;
+}
+
+.resumen-linea {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  font-size: 15px;
+  color: #4b5563;
+}
+
+.resumen-linea strong {
+  color: #000000;
+}
+
+.resumen-divider {
+  border: 0;
+  border-top: 1px solid #e5e7eb;
+  margin: 16px 0;
+}
+
+.total-linea {
+  font-size: 18px;
+  color: #000000;
+  margin-bottom: 24px;
+}
+
+.total-linea strong {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+/* Botón de Checkout */
+.btn-finalizar-compra {
+  width: 100%;
+  background-color: #2b5cb3; /* Azul institucional figma */
+  color: #ffffff;
+  border: none;
+  border-radius: 6px;
+  height: 40px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-finalizar-compra:hover {
+  background-color: #1e40af;
+}
+
+.carrito-vacio-box {
+  text-align: center;
+  padding: 40px;
+  border: 1px dashed #cccccc;
+  border-radius: 8px;
+  color: #6b7280;
+}

@@ -21,7 +21,7 @@ public class CreateProductoDTO {
     @Min(0)
     private Integer stock;
 
-    @NotNull
+    //@NotNull
     private Long idUsuario;
 
     @NotNull

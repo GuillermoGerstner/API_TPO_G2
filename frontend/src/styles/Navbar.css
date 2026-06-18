@@ -1,0 +1,138 @@
+.navbar-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  padding: 14px 40px;
+  border-bottom: 1px solid #b0b0b0;
+  height: 65px;
+  box-sizing: border-box;
+}
+
+/* --- Logo --- */
+.navbar__logo-link {
+  text-decoration: none;
+  font-family: Arial, sans-serif;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.navbar__logo-bold {
+  font-size: 26px;
+  font-weight: 700;
+  color: #000000;
+  letter-spacing: 0.5px;
+}
+
+.navbar__logo-sub {
+  font-size: 13px;
+  font-weight: 400;
+  color: #555555;
+}
+
+/* --- Barra de Búsqueda --- */
+.navbar__search-wrapper {
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border: 1px solid #999999;
+  border-radius: 20px;
+  padding: 6px 16px;
+  width: 400px;
+  max-width: 50%;
+  gap: 8px;
+}
+
+.navbar__search-icon {
+  font-size: 14px;
+  opacity: 0.6;
+}
+
+.navbar__search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  color: #1a1a1a;
+  background: transparent;
+}
+
+.navbar__search-input::placeholder {
+  color: #888888;
+}
+
+/* --- Acciones de la Derecha --- */
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.navbar__link-text {
+  font-family: Arial, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a1a;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.navbar__link-text:hover {
+  color: #2c4870;
+}
+
+.navbar__action-icon {
+  font-size: 20px;
+  text-decoration: none;
+  color: #000000;
+  cursor: pointer;
+  transition: transform 0.1s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar__action-icon:hover {
+  transform: scale(1.1);
+}
+
+/* --- Globo flotante del Carrito (Badge) --- */
+.navbar__cart-btn {
+  position: relative;
+}
+
+.navbar__cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -8px;
+  background-color: #2c4870; /* Azul institucional a juego con los botones */
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 50%;
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar__logout-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.1s ease;
+}
+
+.navbar__logout-btn:hover {
+  transform: scale(1.1);
+}
