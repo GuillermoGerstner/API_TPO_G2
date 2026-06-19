@@ -12,9 +12,10 @@ function FormularioProducto() {
     nombre: "",
     precio: "",
     stock: "",
-    idCategoria: "1", // Categoría por defecto (por ej. Electrónica)
+    idCategoria: "", // Categoría por defecto (por ej. Electrónica)
     descripcion: "",
   });
+  const [categorias, setCategorias] = useState([]);
 
   const [loading, setLoading] = useState(isEditMode);
   const [error, setError] = useState("");
@@ -33,7 +34,7 @@ function FormularioProducto() {
             nombre: prod.nombre,
             precio: prod.precio,
             stock: prod.stock || 0,
-            idCategoria: prod.categoria ? prod.categoria.id.toString() : "1",
+            idCategoria: prod.categoria ? prod.categoria.id.toString() : "",
             descripcion: prod.descripcion || "",
           });
         })
@@ -44,6 +45,25 @@ function FormularioProducto() {
     }
   }, [id, isEditMode]);
 
+  useEffect(() => {
+    api
+      .get("/categorias")
+      .then((res) => {
+        setCategorias(res.data);
+
+        if (!isEditMode && res.data.length > 0) {
+          setFormData((prev) => ({
+            ...prev,
+            idCategoria: res.data[0].id.toString(),
+          }));
+        }
+      })
+      .catch((err) => {
+        console.error(err);
+        setError("No se pudieron cargar las categorías.");
+      });
+  }, [isEditMode]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -52,6 +72,11 @@ function FormularioProducto() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
+
+    if (!formData.idCategoria) {
+      alert("Debe seleccionar una categoría.");
+      return;
+    }
 
     // Estructuramos el DTO exigido por Java
     const payload = {
@@ -141,12 +166,15 @@ function FormularioProducto() {
               name="idCategoria"
               value={formData.idCategoria}
               onChange={handleChange}
+              disabled={categorias.length === 0}
+              required
             >
-              <option value="1">Electrónica</option>
-              <option value="2">Ropa</option>
-              <option value="3">Hogar</option>
-              <option value="4">Deportes</option>
-              <option value="5">Libros</option>
+              <option value="">Seleccione una categoría</option>
+              {categorias.map((categoria) => (
+                <option key={categoria.id} value={categoria.id}>
+                  {categoria.nombre}
+                </option>
+              ))}
             </select>
           </div>
 
