@@ -1,5 +1,7 @@
-import { useContext } from "react";
+import { useContext, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
+import api from "../api/api";
 import { CarritoContext } from "../contexto/CarritoProvider";
 import cameraImg from "../assets/camera.png";
 
@@ -14,6 +16,9 @@ function Carrito() {
     clearCarrito,
   } = useContext(CarritoContext);
 
+  const navigate = useNavigate();
+  const [procesandoCompra, setProcesandoCompra] = useState(false);
+
   const cantidadItems = carritoItems.reduce(
     (acc, item) => acc + item.cantidad,
     0,
@@ -27,6 +32,69 @@ function Carrito() {
   const envio = carritoItems.length > 0 ? 50.0 : 0;
   const impuestos = carritoItems.length > 0 ? 10.0 : 0;
   const total = subtotal + envio + impuestos;
+
+  const handleFinalizarCompra = async () => {
+    if (carritoItems.length === 0) {
+      alert("El carrito está vacío.");
+      return;
+    }
+
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+      alert("Debés iniciar sesión para finalizar la compra.");
+      navigate("/login");
+      return;
+    }
+
+    setProcesandoCompra(true);
+
+    try {
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      const carritoResponse = await api.get("/carrito/actual", config);
+      const carritoId = carritoResponse.data.id;
+
+      await api.delete(`/carrito/${carritoId}/vaciar`, config);
+
+      for (const item of carritoItems) {
+        await api.post(`/carrito/${carritoId}/agregar`, null, {
+          ...config,
+          params: {
+            productoId: item.id,
+            cantidad: item.cantidad,
+          },
+        });
+      }
+
+      const pedidoResponse = await api.post(
+        `/carrito/${carritoId}/checkout`,
+        null,
+        config,
+      );
+
+      clearCarrito();
+
+      alert(`¡Compra finalizada con éxito! Pedido #${pedidoResponse.data.id}`);
+
+      navigate("/");
+    } catch (error) {
+      console.error("Error al finalizar la compra:", error);
+
+      const mensaje =
+        error.response?.data?.message ||
+        error.response?.data?.error ||
+        "No se pudo finalizar la compra.";
+
+      alert(mensaje);
+    } finally {
+      setProcesandoCompra(false);
+    }
+  };
 
   return (
     <div className="carrito-pagina-contenedor">
@@ -166,9 +234,10 @@ function Carrito() {
 
             <button
               className="btn-finalizar-compra"
-              onClick={() => alert("Procesando compra...")}
+              onClick={handleFinalizarCompra}
+              disabled={procesandoCompra}
             >
-              FINALIZAR COMPRA
+              {procesandoCompra ? "PROCESANDO..." : "FINALIZAR COMPRA"}
             </button>
           </div>
         </div>

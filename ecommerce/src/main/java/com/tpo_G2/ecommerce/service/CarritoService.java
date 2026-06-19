@@ -53,6 +53,25 @@ public class CarritoService {
     return toCarritoDTO(carritoRepository.save(carrito));
 }
 
+  public CarritoDTO getOrCreateCarritoByEmail(String email) {
+      Usuario usuario = usuarioRepository.findByEmail(email)
+              .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+      Optional<Carrito> carritoExistente = carritoRepository.findByUsuario_Email(email);
+
+      if (carritoExistente.isPresent()) {
+          return toCarritoDTO(carritoExistente.get());
+      }
+
+      Carrito carrito = new Carrito();
+      carrito.setUsuario(usuario);
+      carrito.setItems(new ArrayList<>());
+
+      Carrito carritoGuardado = carritoRepository.save(carrito);
+
+      return toCarritoDTO(carritoGuardado);
+  }
+
   public CarritoDTO addProducto(Long carritoId, Long productoId, int cantidad){
     Carrito carrito = carritoRepository.findById(carritoId).orElseThrow(() -> new ResourceNotFoundException("Carrito no encontrado"));
     Producto producto = productoRepository.findById(productoId).orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado"));
@@ -164,15 +183,17 @@ public class CarritoService {
   }
 
   private CarritoDTO toCarritoDTO(Carrito carrito) {
-    List<ItemCarritoDTO> itemsDTO = carrito.getItems().stream()
-            .map(this::toItemCarritoDTO)
-            .collect(Collectors.toList());
+      List<ItemCarritoDTO> itemsDTO = carrito.getItems() == null
+              ? new ArrayList<>()
+              : carrito.getItems().stream()
+                      .map(this::toItemCarritoDTO)
+                      .collect(Collectors.toList());
 
-    return new CarritoDTO(
-            carrito.getId(),
-            toUsuarioDTO(carrito.getUsuario()),
-            itemsDTO
-    );
+      return new CarritoDTO(
+              carrito.getId(),
+              toUsuarioDTO(carrito.getUsuario()),
+              itemsDTO
+      );
   }
 
   private ItemCarritoDTO toItemCarritoDTO(ItemCarrito item) {

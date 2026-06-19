@@ -3,6 +3,7 @@ package com.tpo_G2.ecommerce.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,6 +22,11 @@ public class CarritoController {
 
     @Autowired
     private CarritoService carritoService;
+
+    @GetMapping("/actual")
+    public CarritoDTO getCarritoActual(Authentication authentication) {
+        return carritoService.getOrCreateCarritoByEmail(authentication.getName());
+    }
 
     @PostMapping
     public ResponseEntity<CarritoDTO> createCarrito(@RequestParam Long usuarioId) {
