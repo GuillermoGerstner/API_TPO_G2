@@ -34,10 +34,11 @@ function Login() {
       // Lógica de Login
       try {
         const datosParaEnviar = {
-          email: formData.mail,
-          password: formData.password,
+          email: formData.mail, 
+          password: formData.password
         };
 
+        
         const response = await fetch("http://localhost:8080/api/auth/login", {
           method: "POST",
           headers: {
@@ -47,14 +48,15 @@ function Login() {
         });
 
         if (response.ok) {
-          const token = await response.text();
-
-          // Guardamos la sesión local para el Navbar
+          
+          const token = await response.text(); 
+          
           localStorage.setItem("isLoggedIn", "true");
           localStorage.setItem("token", token);
+          localStorage.setItem("userEmail", formData.mail);
 
           alert("¡Inicio de sesión exitoso!");
-          window.location.href = "/"; // Redirecciona al catálogo y actualiza el Navbar
+          window.location.href = "/"; 
         } else {
           alert("Usuario o contraseña incorrectos.");
         }

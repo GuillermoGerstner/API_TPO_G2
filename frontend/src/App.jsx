@@ -7,6 +7,8 @@ import Inicio from "./paginas/Inicio";
 import DetalleProducto from "./paginas/DetalleProducto";
 import Carrito from "./paginas/Carrito";
 import Login from "./paginas/Login";
+import Perfil from './paginas/Perfil.jsx';
+
 import GestionProductos from "./paginas/GestionProductos";
 import FormularioProducto from "./paginas/FormularioProducto";
 //Redux
@@ -31,6 +33,7 @@ function App() {
             <Route path="/carrito" element={<CarritoRedux />} />{" "}
             {/*ahora con redux*/}
             <Route path="/login" element={<Login />} />
+            <Route path="/perfil" element={<Perfil />} />
             <Route path="/gestion-productos" element={<GestionProductos />} />
             <Route
               path="/formulario-producto"

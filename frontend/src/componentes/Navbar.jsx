@@ -54,8 +54,12 @@ function Navbar() {
           </Link>
         )}
 
-        {/* Icono de Mi Perfil / Login */}
-        <Link to="/login" className="navbar__action-icon" title="Mi Cuenta">
+        {/* Icono de Mi Perfil / Con condicional de ruta */}
+        <Link 
+          to={isLogged ? "/perfil" : "/login"} // 👈 ¡EL TRUCO ESTÁ ACÁ!
+          className="navbar_action-icon" 
+          title="Mi Cuenta"
+        >
           👤
         </Link>
 
