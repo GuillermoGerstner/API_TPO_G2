@@ -9,42 +9,77 @@ function Inicio() {
   const [productos, setProductos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [categorias, setCategorias] = useState([]);
 
-  // 1. Estado para manejar la categoría activa (empieza con "Electrónica")
-  const [categoriaSeleccionada, setCategoriaSeleccionada] =
-    useState("Electrónica");
-
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas"); //nuevo
   // Estado para el ordenamiento
   const [orden, setOrden] = useState("A-Z (Alfabético)");
 
-  const categorias = ["Electrónica", "Ropa", "Hogar", "Deportes", "Libros"];
 
   useEffect(() => {
-    api
-      .get("/productos")
-      .then((res) => setProductos(res.data))
-      .catch(() => setError("Error al cargar los productos"))
-      .finally(() => setLoading(false));
+    const fetchCatalogData = async () => {
+      try {
+        setLoading(true);
+        const [productsResponse, categoriesResponse] = await Promise.all([
+          api.get("/productos"),
+          api.get("/categorias")
+        ]);
+
+        setProductos(productsResponse.data);
+        setCategorias(categoriesResponse.data);
+        setLoading(false);
+      } catch (err) {
+        console.error("Error en la carga de datos:", err);
+        setError("Error al traer los datos del servidor");
+        setLoading(false);
+      }
+    };
+
+    fetchCatalogData();
   }, []);
+
+
+  // Filtramos los productos comparando el nombre string de la categoría
+  const productosFiltrados = categoriaSeleccionada === 'Todas'
+    ? productos
+    : productos.filter(p => p.categoria?.nombre?.toLowerCase() === categoriaSeleccionada.toLowerCase());
+
+  // Ordenamos la lista ya filtrada
+  const productosOrdenados = [...productosFiltrados].sort((a, b) => {
+    if (orden === 'alfabetico') {
+      return (a.nombre || "").localeCompare(b.nombre || "");
+    }
+    if (orden === 'precioMenor') {
+      return (a.precio || 0) - (b.precio || 0);
+    }
+    if (orden === 'precioMayor') {
+      return (b.precio || 0) - (a.precio || 0);
+    }
+    return 0;
+  });
 
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error} />;
 
   return (
     <div className="home-layout">
-      {/* Sidebar Izquierdo: Categorías */}
       <aside className="sidebar">
         <h2 className="sidebar__title">CATEGORÍAS</h2>
-        <ul className="sidebar__list">
-          {categorias.map((cat, index) => (
+        <ul className="sidebar_list">
+          <li
+            className={`sidebar__item ${categoriaSeleccionada === 'Todas' ? "sidebar__item--active" : ""}`}
+            onClick={() => setCategoriaSeleccionada('Todas')}
+          >
+            <span className="sidebar__icon">★</span> Todas
+          </li>
+
+          {categorias.map((cat) => (
             <li
-              key={index}
-              // 2. Compara dinámicamente si es la categoría seleccionada para ponerle la clase activa
-              className={`sidebar__item ${cat === categoriaSeleccionada ? "sidebar__item--active" : ""}`}
-              // 3. Al hacer click, actualiza el estado con la categoría clickeada
-              onClick={() => setCategoriaSeleccionada(cat)}
+              key={cat.id}
+              className={`sidebar__item ${categoriaSeleccionada === cat.nombre ? "sidebar__item--active" : ""}`}
+              onClick={() => setCategoriaSeleccionada(cat.nombre)}
             >
-              <span className="sidebar__icon">★</span> {cat}
+              <span className="sidebar__icon">★</span> {cat.nombre}
             </li>
           ))}
         </ul>
@@ -60,15 +95,14 @@ function Inicio() {
             value={orden}
             onChange={(e) => setOrden(e.target.value)}
           >
-            <option value="A-Z (Alfabético)">A-Z (Alfabético)</option>
-            <option value="Precio: Menor a Mayor">Precio: Menor a Mayor</option>
-            <option value="Precio: Mayor a Menor">Precio: Mayor a Menor</option>
+            <option value="alfabetico">A-Z (Alfabético)</option>
+            <option value="precioMenor">Precio: Menor a Mayor</option>
+            <option value="precioMayor">Precio: Mayor a Menor</option>
           </select>
         </div>
 
-        {/* Grilla de Productos */}
         <div className="products-grid">
-          {productos.map((producto) => (
+          {productosOrdenados.map((producto) => (
             <ProductoCard key={producto.id} producto={producto} />
           ))}
         </div>
