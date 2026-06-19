@@ -1,10 +1,15 @@
-import React, { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { CarritoContext } from "../contexto/CarritoProvider";
 import "../styles/Navbar.css";
 
 function Navbar() {
-  const carritoItems = useSelector((state) => state.cart.items);
+    const { carritoItems } = useContext(CarritoContext);
+
+    const cantidadItems = carritoItems.reduce(
+      (acc, item) => acc + item.cantidad,
+      0,
+    );
 
   // 1. Estado local para rastrear si el usuario está conectado
   const [isLogged, setIsLogged] = useState(false);
@@ -70,8 +75,8 @@ function Navbar() {
           title="Carrito de compras"
         >
           🛒
-          {carritoItems.length > 0 && (
-            <span className="navbar__cart-badge">{carritoItems.length}</span>
+          {cantidadItems > 0 && (
+            <span className="navbar__cart-badge">{cantidadItems}</span>
           )}
         </Link>
 
