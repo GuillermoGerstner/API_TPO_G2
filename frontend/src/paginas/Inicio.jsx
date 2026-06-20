@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useSearchParams } from "react-router-dom";
+
 import api from "../api/api";
 import ProductoCard from "../componentes/ProductoCard";
 import Loader from "../componentes/Loader";
@@ -11,10 +13,24 @@ function Inicio() {
   const [error, setError] = useState("");
   const [categorias, setCategorias] = useState([]);
 
-  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas"); //nuevo
-  // Estado para el ordenamiento
-  const [orden, setOrden] = useState("A-Z (Alfabético)");
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
+  const [orden, setOrden] = useState("alfabetico");
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const busqueda = searchParams.get("q") || "";
+
+  const handleBusquedaChange = (e) => {
+    const valor = e.target.value;
+    const nuevosParams = new URLSearchParams(searchParams);
+
+    if (valor.trim()) {
+      nuevosParams.set("q", valor);
+    } else {
+      nuevosParams.delete("q");
+    }
+
+    setSearchParams(nuevosParams);
+  };
 
   useEffect(() => {
     const fetchCatalogData = async () => {
@@ -39,10 +55,23 @@ function Inicio() {
   }, []);
 
 
-  // Filtramos los productos comparando el nombre string de la categoría
-  const productosFiltrados = categoriaSeleccionada === 'Todas'
-    ? productos
-    : productos.filter(p => p.categoria?.nombre?.toLowerCase() === categoriaSeleccionada.toLowerCase());
+  // Primero filtramos por categoría y búsqueda, luego ordenamos el resultado
+  const textoBusqueda = busqueda.trim().toLowerCase();
+
+  const productosFiltrados = productos.filter((producto) => {
+    const coincideCategoria =
+      categoriaSeleccionada === "Todas" ||
+      producto.categoria?.nombre?.toLowerCase() ===
+        categoriaSeleccionada.toLowerCase();
+
+    const coincideBusqueda =
+      textoBusqueda === "" ||
+      producto.nombre?.toLowerCase().includes(textoBusqueda) ||
+      producto.descripcion?.toLowerCase().includes(textoBusqueda) ||
+      producto.categoria?.nombre?.toLowerCase().includes(textoBusqueda);
+
+    return coincideCategoria && coincideBusqueda;
+  });
 
   // Ordenamos la lista ya filtrada
   const productosOrdenados = [...productosFiltrados].sort((a, b) => {
@@ -65,7 +94,7 @@ function Inicio() {
     <div className="home-layout">
       <aside className="sidebar">
         <h2 className="sidebar__title">CATEGORÍAS</h2>
-        <ul className="sidebar_list">
+        <ul className="sidebar__list">
           <li
             className={`sidebar__item ${categoriaSeleccionada === 'Todas' ? "sidebar__item--active" : ""}`}
             onClick={() => setCategoriaSeleccionada('Todas')}
@@ -87,25 +116,45 @@ function Inicio() {
 
       {/* Contenido Principal */}
       <main className="main-content">
-        <div className="main-content__filter-bar">
-          <label htmlFor="sort">Ordenar por:</label>
-          <select
-            id="sort"
-            className="main-content__select"
-            value={orden}
-            onChange={(e) => setOrden(e.target.value)}
-          >
-            <option value="alfabetico">A-Z (Alfabético)</option>
-            <option value="precioMenor">Precio: Menor a Mayor</option>
-            <option value="precioMayor">Precio: Mayor a Menor</option>
-          </select>
+        <div className="main-content__top-bar">
+          <div className="main-content__search">
+            <label htmlFor="search">Buscar:</label>
+            <input
+              id="search"
+              type="text"
+              className="main-content__search-input"
+              placeholder="Buscar producto..."
+              value={busqueda}
+              onChange={handleBusquedaChange}
+            />
+          </div>
+
+          <div className="main-content__filter-bar">
+            <label htmlFor="sort">Ordenar por:</label>
+            <select
+              id="sort"
+              className="main-content__select"
+              value={orden}
+              onChange={(e) => setOrden(e.target.value)}
+            >
+              <option value="alfabetico">A-Z (Alfabético)</option>
+              <option value="precioMenor">Precio: Menor a Mayor</option>
+              <option value="precioMayor">Precio: Mayor a Menor</option>
+            </select>
+          </div>
         </div>
 
-        <div className="products-grid">
-          {productosOrdenados.map((producto) => (
-            <ProductoCard key={producto.id} producto={producto} />
-          ))}
-        </div>
+        {productosOrdenados.length === 0 ? (
+          <div className="products-empty">
+            No se encontraron productos para la búsqueda realizada.
+          </div>
+        ) : (
+          <div className="products-grid">
+            {productosOrdenados.map((producto) => (
+              <ProductoCard key={producto.id} producto={producto} />
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );

@@ -1,18 +1,28 @@
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { CarritoContext } from "../contexto/CarritoProvider";
 import "../styles/Navbar.css";
 
 function Navbar() {
-    const { carritoItems, clearCarrito } = useContext(CarritoContext);
+  const { carritoItems, clearCarrito } = useContext(CarritoContext);
 
-    const cantidadItems = carritoItems.reduce(
-      (acc, item) => acc + item.cantidad,
-      0,
-    );
+  const cantidadItems = carritoItems.reduce(
+    (acc, item) => acc + item.cantidad,
+    0,
+  );
+
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const busquedaActual = searchParams.get("q") || "";
+
+  const [busquedaNavbar, setBusquedaNavbar] = useState(busquedaActual);  
 
   // 1. Estado local para rastrear si el usuario está conectado
   const [isLogged, setIsLogged] = useState(false);
+
+  useEffect(() => {
+    setBusquedaNavbar(busquedaActual);
+  }, [busquedaActual]);
 
   useEffect(() => {
     // 2. Al cargar el componente, revisamos si el navegador guardó la sesión
@@ -21,6 +31,19 @@ function Navbar() {
       setIsLogged(true);
     }
   }, []);
+
+  // Función para manejar cambios en el input de búsqueda del navbar
+  const handleBusquedaNavbarChange = (e) => {
+    const valor = e.target.value;
+
+    setBusquedaNavbar(valor);
+
+    if (valor.trim()) {
+      navigate(`/?q=${encodeURIComponent(valor)}`);
+    } else {
+      navigate("/");
+    }
+  };
 
   // 3. Función opcional por si quieren agregar un botón de cerrar sesión más adelante
   const handleLogout = () => {
@@ -51,6 +74,8 @@ function Navbar() {
           type="text"
           placeholder="Buscar..."
           className="navbar__search-input"
+          value={busquedaNavbar}
+          onChange={handleBusquedaNavbarChange}
         />
       </div>
 
