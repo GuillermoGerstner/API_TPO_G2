@@ -16,21 +16,8 @@ function Inicio() {
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState("Todas");
   const [orden, setOrden] = useState("alfabetico");
 
-  const [searchParams, setSearchParams] = useSearchParams();
-  const busqueda = searchParams.get("q") || "";
-
-  const handleBusquedaChange = (e) => {
-    const valor = e.target.value;
-    const nuevosParams = new URLSearchParams(searchParams);
-
-    if (valor.trim()) {
-      nuevosParams.set("q", valor);
-    } else {
-      nuevosParams.delete("q");
-    }
-
-    setSearchParams(nuevosParams);
-  };
+  const [searchParams] = useSearchParams();
+  const busqueda = searchParams.get("q") || ""; 
 
   useEffect(() => {
     const fetchCatalogData = async () => {
@@ -117,16 +104,8 @@ function Inicio() {
       {/* Contenido Principal */}
       <main className="main-content">
         <div className="main-content__top-bar">
-          <div className="main-content__search">
-            <label htmlFor="search">Buscar:</label>
-            <input
-              id="search"
-              type="text"
-              className="main-content__search-input"
-              placeholder="Buscar producto..."
-              value={busqueda}
-              onChange={handleBusquedaChange}
-            />
+          <div className="main-content__results-info">
+            {busqueda ? `Resultados para "${busqueda}"` : "Todos los productos"}
           </div>
 
           <div className="main-content__filter-bar">
