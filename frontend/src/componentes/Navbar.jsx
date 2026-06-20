@@ -4,7 +4,7 @@ import { CarritoContext } from "../contexto/CarritoProvider";
 import "../styles/Navbar.css";
 
 function Navbar() {
-    const { carritoItems } = useContext(CarritoContext);
+    const { carritoItems, clearCarrito } = useContext(CarritoContext);
 
     const cantidadItems = carritoItems.reduce(
       (acc, item) => acc + item.cantidad,
@@ -26,6 +26,10 @@ function Navbar() {
   const handleLogout = () => {
     localStorage.removeItem("isLoggedIn");
     localStorage.removeItem("token");
+    localStorage.removeItem("userEmail");
+
+    clearCarrito();
+
     setIsLogged(false);
     window.location.href = "/";
   };

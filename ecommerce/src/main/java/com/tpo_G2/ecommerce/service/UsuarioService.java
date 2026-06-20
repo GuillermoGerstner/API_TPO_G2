@@ -14,7 +14,6 @@ import com.tpo_G2.ecommerce.model.Role;
 import com.tpo_G2.ecommerce.model.Usuario;
 import com.tpo_G2.ecommerce.repository.UsuarioRepository;
 
-
 import jakarta.transaction.Transactional;
 
 @Service
@@ -25,7 +24,7 @@ public class UsuarioService {
     @Autowired
     private PasswordEncoder passwordEncoder; 
 
-   public List<UsuarioDTO> getAllUsuarios() {
+    public List<UsuarioDTO> getAllUsuarios() {
     List<Usuario> usuarios = usuarioRepository.findAll();
 
     return usuarios.stream()
@@ -39,6 +38,12 @@ public class UsuarioService {
         return toUsuarioDTO(usuario);
     }
 
+    public UsuarioDTO getUsuarioByEmail(String email) {
+        Usuario usuario = usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado con email: " + email));
+
+        return toUsuarioDTO(usuario);
+    }
 
     public UsuarioDTO addUsuario(RegisterRequestDTO registroDTO) {
         Usuario usuario = new Usuario();
@@ -52,7 +57,6 @@ public class UsuarioService {
 
         return toUsuarioDTO(usuarioRepository.save(usuario));
     }
-
 
     public UsuarioDTO updateUsuario(Long id, RegisterRequestDTO usuarioDetalles) {
     Usuario usuario = usuarioRepository.findById(id)
